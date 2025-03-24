@@ -48,5 +48,6 @@ def coletar_dados():
     
     print(f"Dados coletados com sucesso! {len(df)} registros gerados.")
 
+
 if __name__ == "__main__":
     coletar_dados()
