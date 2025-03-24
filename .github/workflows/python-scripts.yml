@@ -1,0 +1,45 @@
+name: Executar Scripts Python
+
+on:
+  schedule:
+    - cron: '0 9 * * 1-5'  # Executa às 9h de segunda a sexta
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Permite execução manual
+
+jobs:
+  run_scripts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+      
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install pandas matplotlib faker
+        
+    - name: Executar script de coleta de dados
+      run: python scripts/coleta_dados.py
+      
+    - name: Executar script de processamento
+      run: python scripts/processa_dados.py
+      
+    - name: Executar script de relatório
+      run: python scripts/gera_relatorio.py
+      
+    - name: Armazenar relatórios como artefatos
+      uses: actions/upload-artifact@v3
+      with:
+        name: relatorios
+        path: |
+          relatorios/
+          *.csv
+          *.pdf
